@@ -2,7 +2,7 @@ from scipy.interpolate import splrep,splev,splint
 from scipy import ndimage,integrate
 import numpy
 from math import pi
-import profiles
+import tracer_profiles as profiles
 
 
 def radialConvolve(r,f,sigma,fk=100,fr=1):
