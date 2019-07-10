@@ -197,8 +197,35 @@ def ObsSigma2(aperture,r,M,seeing,light_profile,lp_args,anisotropy,anis_par,inne
         return rout,vd
 
 
-def sigma2general(Mfunc,aperture,lp_pars,light_profile=profiles.deVaucouleurs,seeing=None,anisotropy=None,anis_par=None,reval0=None):
-#returns sigma2 for a generic mass distribution specified by Mfunc
+def sigma2(Mfunc, aperture, lp_pars, light_profile=profiles.deVaucouleurs, seeing=None, anisotropy=None, anis_par=None, reval0=None):
+    """
+    returns sigma^2/G for a generic mass distribution specified by Mfunc. Has same units as Mfunc/aperture.
+
+    Parameters
+    ----------
+    Mfunc : function or tuple. 
+        3D mass distribution of the galaxy. If function, must take an array of radii and return the mass enclosed within each shell of the corresponding radius. If tuple, the first element must be an array of radii, the second element must be an array of masses enclosed in shells of radius matching the fist element
+    aperture : float, list or tuple.
+        Aperture within which velocity dispersion is calculated. If float, the aperture is a circle centered on the galaxy center. If list or tuple with len==2, then the two elements are the width and height of a rectangular aperture centered on the galaxy center. If list or tuple with len==4, then the four elements are the coordinates of a rectangle in an arbitrary position.
+    lp_pars : float or iterable.
+        Arguments used by the tracer distribution function, defining the parameters of the light profile (e.g. half-light radius, Sersic index, etc.)
+    light_profile : function
+        Density profile of the tracers. Takes lp_pars as second argument.
+    seeing : float.
+        Seeing FWHM
+    anisotropy : str.
+        Family of anisotropy profile models; options: [None, 'Beta', 'OM'], corresponding to isotropic, constant anisotropy (beta=cnst) and Osipkov-Merritt anisotropy profile.
+    anis_par : float.
+        Anisotropy parameter. If anisotropy=='beta', then this is a constant anis_par = beta = 1 - sigma_theta^2/sigma_r^2 . If anisotropy=='OM', this is the scale radius of an Osipkov-Merritt anisotropy profile: beta = r^2/(r^2 + anis_par^2)
+    reval0 : float.
+        Physical scale of the galaxy. Default: None. If None, it is set to the half-light radius of the stellar profile. This quantity is used to set the radial range of the integration of the Jeans equation. If Mfunc is a tuple, it is ignored.
+
+    Returns
+    -------
+    s2 : float
+        sigma^2/G in units of Mfunc/aperture. 
+    """
+
     light = light_profile
 
     if type(Mfunc) == tuple:
@@ -212,7 +239,7 @@ def sigma2general(Mfunc,aperture,lp_pars,light_profile=profiles.deVaucouleurs,se
         logreval0 = numpy.log10(reval0)
         r_eval = numpy.logspace(logreval0-3,logreval0+3,400)
         M = Mfunc(r_eval)
-    sigma2 = ObsSigma2(aperture,r_eval,M,seeing,light,lp_pars,anisotropy,anis_par,doConv=True)[1]
-    return sigma2
+    s2 = ObsSigma2(aperture,r_eval,M,seeing,light,lp_pars,anisotropy,anis_par,doConv=True)[1]
+    return s2
 
 
