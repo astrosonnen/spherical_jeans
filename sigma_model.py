@@ -161,25 +161,20 @@ def ObsSigma2(aperture,r,M,seeing,light_profile,lp_args,anisotropy,anis_par,inne
 
 
     if type(aperture)==list or type(aperture)==tuple:
-        if len(aperture)==4:
-            #rectangular aperture
+        #rectangular aperture
             
-            r1 = Rvals[:index].copy()
-            sigma = sigma[:index]
-            sbmodel = sbmodel[:index]
+        r1 = Rvals[:index].copy()
+        sigma = sigma[:index]
+        sbmodel = sbmodel[:index]
 
-            radsigma = splrep(r1,sigma)
-            radsbmodel = splrep(r1,sbmodel)
-            
-            sigmaintegrand = lambda x,y: splev((x**2+y**2)**0.5,radsigma)
-            sbintegrand = lambda x,y: splev((x**2+y**2)**0.5,radsbmodel)
+        radsigma = splrep(r1,sigma)
+        radsbmodel = splrep(r1,sbmodel)
+        
+        sigmaintegrand = lambda x,y: splev((x**2+y**2)**0.5,radsigma)
+        sbintegrand = lambda x,y: splev((x**2+y**2)**0.5,radsbmodel)
 
-            integral2 = integrate.dblquad(sigmaintegrand,x1,x2,lambda y:y1,lambda y:y2)[0]/integrate.dblquad(sbintegrand,x1,x2,lambda y:y1,lambda y:y2)[0]
-            return R,integral2
-
-        else:
-            print 'wtf'
-            df
+        integral2 = integrate.dblquad(sigmaintegrand,x1,x2,lambda y:y1,lambda y:y2)[0]/integrate.dblquad(sbintegrand,x1,x2,lambda y:y1,lambda y:y2)[0]
+        return R,integral2
 
     else:
         r1 = Rvals[:index].copy()

@@ -139,6 +139,9 @@ def sersic(r,lp_pars,proj=False):
     else:
         # spherically deprojected Sersic profile
         deriv = lambda R: -sersic_bfunc(nser)/nser*(R/(reff))**(1/nser)/R*sersic_sb(R, lp_pars)
-        return -1./np.pi*quad(lambda R: deriv(R)/(R**2 - r**2)**0.5, r, np.inf)[0]
-
+        r_arr = np.atleast_1d(r)
+        out = 0.*r_arr
+        for i in range(len(r_arr)):
+            out[i] = -1./np.pi*quad(lambda R: deriv(R)/(R**2 - r_arr[i]**2)**0.5, r_arr[i], np.inf)[0]
+        return out
 

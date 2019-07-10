@@ -12,7 +12,7 @@ def L(reff, nser):
     return reff**2*2*np.pi*nser/b(nser)**(2*nser)*gfunc(2*nser)
 
 def Sigma(R, reff, nser): # projected surface mass density
-    return np.exp(-b(nser)*(R/reff)**(1./nser))/L(nser, reff)
+    return np.exp(-b(nser)*(R/reff)**(1./nser))/L(reff, nser)
 
 def rho(r, reff, nser): # spherical deprojection
 
@@ -43,4 +43,11 @@ def M3d(r, reff, nser, m3d_spline=None):
         m3d_spline = get_m3d_spline(reff, nser)
 
     return splev(r, m3d_spline)
+
+def M2d(R, reff, nser):
+    R = np.atleast_1d(R)
+    out = 0.*R
+    for i in range(len(R)):
+        out[i] = 2*np.pi*quad(lambda r: r*Sigma(r, nser, reff), 0., R[i])[0]
+    return out
 
