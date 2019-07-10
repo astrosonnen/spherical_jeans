@@ -2,16 +2,8 @@ import numpy as np
 from scipy.integrate import quad
 import os
 from scipy.special import gamma as gfunc
-from scipy.interpolate import splrep, splint
+from scipy.interpolate import splrep, splint, splev
 
-
-rgrid_min = 0.001
-rgrid_max = 100.
-rgrid_n = 1000
-
-ngrid_min = 0.5
-ngrid_max = 20.
-ngrid_n = 21
 
 def b(nser):
     return 2*nser - 1./3. + 4/405./nser + 46/25515/nser**2
@@ -24,7 +16,7 @@ def Sigma(R, reff, nser): # projected surface mass density
 
 def rho(r, reff, nser): # spherical deprojection
 
-    deriv = lambda R: -sersic_bfunc(nser)/nser*(R/(reff))**(1/nser)/R*sersic_sb(R, lp_pars)
+    deriv = lambda R: -b(nser)/nser*(R/(reff))**(1/nser)/R*Sigma(R, reff, nser)
     return -1./np.pi*quad(lambda R: deriv(R)/(R**2 - r**2)**0.5, r, np.inf)[0]
 
 def get_m3d_spline(reff, nser, rmin=1e-4, rmax=1e4, nr=1001):
@@ -33,7 +25,7 @@ def get_m3d_spline(reff, nser, rmin=1e-4, rmax=1e4, nr=1001):
     r_grid = np.logspace(np.log10(rmin), np.log10(rmax), nr)
     rho_grid = np.zeros(nr)
     for i in range(nr):
-        rho_grid[i] = rho(r_grid[i])
+        rho_grid[i] = rho(r_grid[i], reff, nser)
     rs0 = np.append(0., r_grid)
     mp0 = np.append(0., 4.*np.pi*rho_grid*r_grid**2)
     

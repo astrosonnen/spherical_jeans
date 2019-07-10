@@ -124,7 +124,7 @@ def sersic_3d_spline(lp_pars, rmin=1e-3, rmax=1e3, nr_grid=1001):
         return -1./np.pi*quad(lambda R: deriv(R)/(R**2 - r**2)**0.5, r, np.inf)[0]
 
     rho_grid = np.zeros(nr_grid)
-    for i in range(nr):
+    for i in range(nr_grid):
         rho_grid[i] = rho(r_grid[i])
 
     return splrep(r_grid, rho_grid)
