@@ -9,7 +9,7 @@ from scipy.interpolate import splev
 Reff = 5. # half-light radius in kpc
 aperture = 0.5*Reff # radius of circular aperture within which the velocity dispersion is calculated
 
-Meff = 3.*1e11 # total projected mass enclosed within the half-light radius (used to normalize the density profile)
+Meff = 1e11 # total projected mass enclosed within the half-light radius (used to normalize the density profile)
 
 # physical constants in cgs units
 kpc = 3.08568025e21
@@ -21,8 +21,8 @@ nser_list = [1., 3., 5.] # list of values of the Sersic index
 for nser in nser_list:
 
     # deprojects a Sersic profile and obtains a spline interpolation of the M(r) profile
-    M3d_spline = sersic.get_m3d_spline(Reff, nser)
-    norm = Meff/sersic.M2d(Reff, Reff, nser)
+    M3d_spline = sersic.get_m3d_spline(nser, Reff)
+    norm = Meff/sersic.M2d(Reff, nser, Reff)
 
     def Mass_profile(r):
         return norm*splev(r, M3d_spline)
