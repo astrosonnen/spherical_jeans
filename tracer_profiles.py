@@ -5,13 +5,10 @@ from scipy.interpolate import splev, splrep
 from scipy.integrate import quad
 from scipy.special import gamma as gfunc
 import pickle
+import os
 
 
 sjpath = spherical_jeans.__path__[0]
-
-f = open('%s/deV_rho.dat'%sjpath,'r')
-deV_rho_spline = pickle.load(f)
-f.close()
 
 def hernquist_sb(rvals,a):
     """
@@ -107,12 +104,6 @@ def sersic_sb(rvals, lp_pars):
     L = reff**2*2*np.pi*nser/sersic_bfunc(nser)**(2*nser)*gfunc(2*nser)
     return np.exp(-sersic_bfunc(nser)*(rvals/reff)**(1./nser))/L
 
-def deVaucouleurs(r,reff,proj=False):
-    if proj:
-        return sersic_sb(r, (reff, 4.))
-    else:
-        return splev(r/reff,deV_rho_spline)*reff**(-3)
-
 def sersic_3d_spline(lp_pars, rmin=1e-3, rmax=1e3, nr_grid=1001):
     # spherically de-projected Sersic profile, evaluated on a radial grid.
 
@@ -129,6 +120,24 @@ def sersic_3d_spline(lp_pars, rmin=1e-3, rmax=1e3, nr_grid=1001):
 
     return splrep(r_grid, rho_grid)
 
+deV_gridname = '%s/deV_rho.dat'%sjpath
+
+if os.path.isfile(deV_gridname):
+    f = open('%s/deV_rho.dat'%sjpath,'rb')
+    deV_rho_spline = pickle.load(f)
+    f.close()
+
+else:
+    deV_rho_spline = sersic_3d_spline([1., 4.], rmin=1e-4, rmax=1e4, nr_grid=10001)
+    f = open(deV_gridname, 'wb')
+    pickle.dump(deV_rho_spline, f)
+    f.close()
+
+def deVaucouleurs(r,reff,proj=False):
+    if proj:
+        return sersic_sb(r, (reff, 4.))
+    else:
+        return splev(r/reff,deV_rho_spline)*reff**(-3)
 
 def sersic(r,lp_pars,proj=False):
     

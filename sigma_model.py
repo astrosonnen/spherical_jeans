@@ -2,7 +2,7 @@ from scipy.interpolate import splrep,splev,splint
 from scipy import ndimage,integrate
 import numpy
 from math import pi
-import tracer_profiles as profiles
+from spherical_jeans import tracer_profiles as profiles
 
 
 def radialConvolve(r,f,sigma,fk=100,fr=1):
@@ -53,11 +53,8 @@ def Isigma2(R,r,M,light_profile,lp_args=None):
         reval = numpy.logspace(numpy.log10(R[i]),numpy.log10(r[-1]),301)
         reval[0] = R[i] # Avoid sqrt(-epsilon)
         Mlight = splev(reval,model)
-#	if ((reval**2).min() - R[i]**2)<0:
-#	    print reval.min(),R[i]
-#	    print 'porco dio!'
 
-	eps = 10**(-8)
+        eps = 10**(-8)
         integrand = Mlight*(reval**2-R[i]**2+eps)**0.5
         mod = splrep(reval,integrand,k=3,s=0)
         result[i] = 2.*splint(R[i],reval[-1],mod)
@@ -103,13 +100,6 @@ def Isigma2OM(R,r,M,light_profile,lp_args,ra):
         result[i] = 2.*splint(R[i],reval[-1],mod)
     return result
 
-
-
-
-import cPickle
-import vdmodel_2013
-path = vdmodel_2013.__path__[0]
-#sbSeeingModel = cPickle.load(open('%s/sbSeeing.model'%path))
 
 def ObsSigma2(aperture,r,M,seeing,light_profile,lp_args,anisotropy,anis_par,inner=None,limit=None,multi=False,beta=0.,doConv=False):
 
