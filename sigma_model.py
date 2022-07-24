@@ -7,7 +7,6 @@ from spherical_jeans import tracer_profiles as profiles
 
 def radialConvolve(r,f,sigma,fk=100,fr=1):
     from scipy.special import j0
-    import special_functions as sf
     #mod = splrep(r,f,s=0,k=1)
     #norm = splint(r[0],r[-1],mod)
     r0 = r.copy()
@@ -29,7 +28,7 @@ def radialConvolve(r,f,sigma,fk=100,fr=1):
 
     ab = a*b
     mod = splrep(k,ab,s=0,k=1)
-    k = numpy.logspace(kmin,kmax,r.size*fk)
+    k = numpy.logspace(kmin,kmax,r.size*int(fk))
     ab = splev(k,mod)
     result = r*0.
     for i in range(r.size):
