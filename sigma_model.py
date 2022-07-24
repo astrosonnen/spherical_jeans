@@ -53,8 +53,8 @@ def Isigma2(R,r,M,light_profile,lp_args=None):
         reval[0] = R[i] # Avoid sqrt(-epsilon)
         Mlight = splev(reval,model)
 
-        eps = 10**(-8)
-        integrand = Mlight*(reval**2-R[i]**2+eps)**0.5
+        eps = 1e-8
+        integrand = Mlight*((1+eps)*reval**2-R[i]**2)**0.5
         mod = splrep(reval,integrand,k=3,s=0)
         result[i] = 2.*splint(R[i],reval[-1],mod)
     return result
