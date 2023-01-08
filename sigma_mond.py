@@ -5,15 +5,12 @@ from math import pi
 from spherical_jeans import tracer_profiles as profiles
 
 
-Mpc = 3.08568025e24
+kpc = 3.08568025e21
 c = 2.99792458e10
 G = 6.67300e-8
-f_bar = 4.825 / 30.7 # baryon fraction
-kpc = Mpc/1000.
-
 M_Sun = 1.98892e33
 
-a0 = 1.2e-8 # MOND acceleration scale
+a0_mond = 1.2e-8 # MOND acceleration scale in cgs units
 
 def radialConvolve(r,f,sigma,fk=100,fr=1):
     from scipy.special import j0
@@ -57,9 +54,9 @@ def Isigma2(R, r, M, light_profile, lp_args=None):
     light = light_profile(r,lp_args)
 
     acc = G*M*M_Sun/(r*kpc)**2
-    mond_regime = acc < a0
+    mond_regime = acc < a0_mond
 
-    acc[mond_regime] = (acc[mond_regime]*a0)**0.5
+    acc[mond_regime] = (acc[mond_regime]*a0_mond)**0.5
 
     model = splrep(r,acc*light,k=3,s=0) #this is part of the integrand
     result = R*0.
@@ -171,7 +168,7 @@ def sigma_mond(Mfunc, aperture, lp_pars, light_profile=profiles.deVaucouleurs, s
 
     Returns
     -------
-    s2 : float
+    sigma : float
         sigma in units of km/s
     """
 
