@@ -53,12 +53,12 @@ def Isigma2(R, r, M, light_profile, lp_args=None):
 
     light = light_profile(r,lp_args)
 
-    acc = G*M*M_Sun/(r*kpc)**2
-    mond_regime = acc < a0_mond
+    accN = G*M*M_Sun/(r*kpc)**2
+    #mond_regime = acc < a0_mond
+    #acc[mond_regime] = (acc[mond_regime]*a0_mond)**0.5
+    acc_mond = accN * 0.5*(1. + (1. + 4.*a0_mond/accN)**0.5)
 
-    acc[mond_regime] = (acc[mond_regime]*a0_mond)**0.5
-
-    model = splrep(r,acc*light,k=3,s=0) #this is part of the integrand
+    model = splrep(r,acc_mond*light,k=3,s=0) #this is part of the integrand
     result = R*0.
     for i in range(R.size):
         reval = numpy.logspace(numpy.log10(R[i]),numpy.log10(r[-1]),301)
